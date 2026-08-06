@@ -1,18 +1,12 @@
-import os
-import sys
+from app.commands import parse_command
+from app.parser import setup_parser
 
 
 def main():
-    command = sys.argv[1]
-    if command == "init":
-        os.mkdir(".git")
-        os.mkdir(".git/objects")
-        os.mkdir(".git/refs")
-        with open(".git/HEAD", "w") as f:
-            f.write("ref: refs/heads/main\n")
-        print("Initialized git directory")
-    else:
-        raise RuntimeError(f"Unknown command #{command}")
+    parser = setup_parser()
+    args = parser.parse_args()
+
+    parse_command(args)
 
 
 if __name__ == "__main__":
