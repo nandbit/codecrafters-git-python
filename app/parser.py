@@ -10,6 +10,7 @@ def setup_parser() -> argparse.ArgumentParser:
 
     _setup_cat_file_parser(subparsers)
     _setup_init_parser(subparsers)
+    _setup_hash_object_parser(subparsers)
 
     return parser
 
@@ -28,7 +29,7 @@ def _setup_init_parser(subparsers: argparse._SubParsersAction) -> None:
 def _setup_cat_file_parser(subparsers: argparse._SubParsersAction) -> None:
     cat_file_parser = subparsers.add_parser("cat-file")
     cat_file_parser.add_argument(
-        dest="cat_file_dest",
+        dest="cat_file_target",
         help="Supply the hash of the file to print its contents.",
         type=str,
         nargs="?",
@@ -38,5 +39,31 @@ def _setup_cat_file_parser(subparsers: argparse._SubParsersAction) -> None:
         "-p",
         dest="cat_file_pretty",
         help="Whether to pretty print the contents of the object based on its type.",
+        action="store_true",
+    )
+
+
+def _setup_hash_object_parser(
+    subparsers: argparse._SubParsersAction,
+) -> None:
+    hash_object_parser = subparsers.add_parser("hash-object")
+    hash_object_parser.add_argument(
+        dest="hash_object_target",
+        help="Content to hash.",
+        type=str,
+        nargs="?",
+        action="store",
+    )
+    hash_object_parser.add_argument(
+        "-w",
+        "--write",
+        dest="hash_object_write",
+        help="Whether to write the hashed object into the objects directory.",
+        action="store_true",
+    )
+    hash_object_parser.add_argument(
+        "--stdin",
+        dest="hash_object_stdin",
+        help="Whether the content to be hashed comes from stdin.",
         action="store_true",
     )
