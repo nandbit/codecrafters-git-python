@@ -11,6 +11,7 @@ def setup_parser() -> argparse.ArgumentParser:
     _setup_cat_file_parser(subparsers)
     _setup_init_parser(subparsers)
     _setup_hash_object_parser(subparsers)
+    _setup_ls_tree_parser(subparsers)
 
     return parser
 
@@ -65,5 +66,24 @@ def _setup_hash_object_parser(
         "--stdin",
         dest="hash_object_stdin",
         help="Whether the content to be hashed comes from stdin.",
+        action="store_true",
+    )
+
+
+def _setup_ls_tree_parser(
+    subparsers: argparse._SubParsersAction,
+) -> None:
+    ls_tree_parser = subparsers.add_parser("ls-tree")
+    ls_tree_parser.add_argument(
+        dest="ls_tree_target",
+        help="Tree object to inspect.",
+        type=str,
+        nargs="?",
+        action="store",
+    )
+    ls_tree_parser.add_argument(
+        "--name-only",
+        dest="ls_tree_name_only",
+        help='List only filenames (instead of the "long" output), one per line.',
         action="store_true",
     )

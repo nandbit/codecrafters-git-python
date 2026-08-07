@@ -3,15 +3,7 @@ import os
 import sys
 import zlib
 
-
-def _validate_hash_object_args(target: str, write: bool, stdin: bool) -> None:
-    if target is None:
-        raise ValueError("No target supplied.")
-        sys.exit()
-
-    if not os.path.exists(target):
-        print(f"Error: no file {target} found.")
-        sys.exit()
+from app.utils import blob_filepath
 
 
 def hash_object(
@@ -34,7 +26,7 @@ def hash_object(
 
     # Create file to write to
     file_dir = os.path.join(".git/objects/", hash[:2])
-    filepath = os.path.join(".git/objects/", hash[:2], hash[2:])
+    filepath = blob_filepath(target)
 
     # Create the subdirectory in objects directory
     os.mkdir(file_dir)
@@ -46,6 +38,16 @@ def hash_object(
         f.write(compressed_content)
 
     return hash
+
+
+def _validate_hash_object_args(target: str, write: bool, stdin: bool) -> None:
+    if target is None:
+        raise ValueError("No target supplied.")
+        sys.exit()
+
+    if not os.path.exists(target):
+        print(f"Error: no file {target} found.")
+        sys.exit()
 
 
 def _create_hash(content: bytes, header: bytes) -> str:

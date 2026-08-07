@@ -3,6 +3,7 @@ import argparse
 from app.commands.cat_file import cat_file
 from app.commands.hash_object import hash_object
 from app.commands.init import init
+from app.commands.ls_tree import ls_tree
 
 
 def execute_command(namespace: argparse.Namespace) -> None:
@@ -24,3 +25,10 @@ def execute_command(namespace: argparse.Namespace) -> None:
             content_type="blob",
         )
         print(hash)
+
+    elif command == "ls-tree":
+        output = ls_tree(
+            target=namespace.ls_tree_target,
+            name_only=namespace.ls_tree_name_only,
+        )
+        print(output)

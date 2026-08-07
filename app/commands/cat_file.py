@@ -2,22 +2,11 @@ import os
 import sys
 import zlib
 
-
-def _validate_cat_file_args(target: str, filepath: str) -> None:
-    if target is None:
-        raise ValueError("No target supplied.")
-        sys.exit()
-
-    if not os.path.exists(filepath):
-        print(f"Error: no file {filepath} found.")
-        sys.exit()
+from app.utils import blob_filepath
 
 
 def cat_file(target: str) -> str:
-    subdir = target[:2]
-    filename = target[2:]
-    filepath = os.path.join(f".git/objects/{subdir}/{filename}")
-
+    filepath = blob_filepath(target)
     _validate_cat_file_args(target, filepath)
 
     with open(filepath, "rb") as file:
@@ -27,3 +16,13 @@ def cat_file(target: str) -> str:
         decoded_data = stripped_data.decode("utf-8")
 
         return decoded_data
+
+
+def _validate_cat_file_args(target: str, filepath: str) -> None:
+    if target is None:
+        raise ValueError("No target supplied.")
+        sys.exit()
+
+    if not os.path.exists(filepath):
+        print(f"Error: no file {filepath} found.")
+        sys.exit()
