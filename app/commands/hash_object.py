@@ -26,7 +26,7 @@ def hash_object(
 
     # Create file to write to
     file_dir = os.path.join(".git/objects/", hash[:2])
-    filepath = blob_filepath(target)
+    filepath = blob_filepath(hash)
 
     # Create the subdirectory in objects directory
     os.mkdir(file_dir)
