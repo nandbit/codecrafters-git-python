@@ -12,6 +12,7 @@ def setup_parser() -> argparse.ArgumentParser:
     _setup_init_parser(subparsers)
     _setup_hash_object_parser(subparsers)
     _setup_ls_tree_parser(subparsers)
+    _setup_write_tree_parser(subparsers)
 
     return parser
 
@@ -87,3 +88,9 @@ def _setup_ls_tree_parser(
         help='List only filenames (instead of the "long" output), one per line.',
         action="store_true",
     )
+
+
+def _setup_write_tree_parser(
+    subparsers: argparse.ArgumentParser,
+) -> None:
+    write_tree_parser = subparsers.add_parser("write-tree")
