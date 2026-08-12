@@ -11,13 +11,24 @@ def ls_tree(target: str, name_only: bool) -> None:
 
     file_bytes = _extract_file_bytes(filepath)
     decompressed_bytes = zlib.decompress(file_bytes)
-    entries = _parse_tree_object_bytes(decompressed_bytes)
+    # entries = _parse_tree_object_bytes(decompressed_bytes)
 
-    names = entries
-    if name_only:
-        names = [e[1] for e in entries]
+    header_bytes = decompressed_bytes.split(b"\0")[0]
+    object_type_bytes, size_bytes = header_bytes.split(b" ")
+    object_type = object_type_bytes.decode()
 
-    return "\n".join(names)
+    if object_type == "tree":
+        entries = _parse_tree_object_bytes(decompressed_bytes)
+
+    elif object_type == "commit":
+        return _parse_commit_object_bytes(decompressed_bytes)
+
+        if name_only:
+            names = [e[1] for e in entries]
+
+            return "\n".join(names)
+    else:
+        sys.exit("fatal: not a tree object")
 
 
 def _validate_ls_tree_args(target: str, filepath: str) -> None:
@@ -35,26 +46,55 @@ def _extract_file_bytes(target: str) -> bytes:
         return f.read()
 
 
-def _parse_tree_object_bytes(object_bytes: bytes) -> str:
-    split_bytes = object_bytes.split(b"\0")
-    header_bytes = split_bytes[0]
-    content_bytes = split_bytes[1:]
-
-    object_type, size = header_bytes.split(b" ")
-
-    # print(object_bytes)
-    # print(content_bytes)
+def _parse_tree_object_bytes(object_bytes: bytes) -> list[str]:
 
     entries = []
-    for idx in range(len(content_bytes) - 1):
-        # print(f"loop {idx} of {len(content_bytes) - 1}")
-        # print(content_bytes[idx])
+    for idx in range(len(object_bytes) - 1):
         if idx == 0:
-            mode, name = content_bytes[idx].split(b" ")
-        else:
-            # print(content_bytes[idx][20:])
-            mode, name = content_bytes[idx][20:].split(b" ")
-        sha = content_bytes[idx + 1][:20]
+            mode, name = object_bytes[idx].split(b" ")
+            continue
+        print(object_bytes[idx])
+        mode, name = object_bytes[idx][20:].split(b" ")
+        sha = object_bytes[idx + 1][:20]
         entries.append((mode.decode(), name.decode(), sha.hex()))
 
     return entries
+
+
+def _parse_commit_object_bytes(object_bytes: bytes) -> list[str]:
+    split_bytes = object_bytes.split(b"\0")
+    header_bytes = split_bytes[0]
+    # Content in a commit object is NOT binary
+    content = split_bytes[1].decode()
+
+    split_content = str(content).split("\n")
+    tree, tree_sha = split_content[0].split(" ")
+    parent, parent_sha = split_content[1].split(" ")
+    (
+        author,
+        author_name,
+        author_email,
+        author_timestamp,
+        author_timezone,
+    ) = split_content[2].split(" ")
+
+    (
+        commiter,
+        commiter_name,
+        commiter_email,
+        commiter_timestamp,
+        commiter_timezone,
+    ) = split_content[3].split(" ")
+
+    commit_message = split_content[4]
+
+    return "\n".join(
+        [
+            f"{tree} {tree_sha}",
+            f"{parent} {parent_sha}",
+            f"{author} {author_name} {author_email} {author_timestamp} {author_timezone}",
+            f"{commiter} {commiter_name} {commiter_email} {commiter_timestamp} {commiter_timezone}",
+            "",
+            f"{commit_message}",
+        ]
+    )
