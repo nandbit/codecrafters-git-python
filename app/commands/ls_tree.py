@@ -19,14 +19,15 @@ def ls_tree(target: str, name_only: bool) -> None:
 
     if object_type == "tree":
         entries = _parse_tree_object_bytes(decompressed_bytes)
+        if name_only:
+            names = [e[1] for e in entries]
+            return "\n".join(names)
+        else:
+            return "\n".join(entries)
 
     elif object_type == "commit":
         return _parse_commit_object_bytes(decompressed_bytes)
 
-        if name_only:
-            names = [e[1] for e in entries]
-
-            return "\n".join(names)
     else:
         sys.exit("fatal: not a tree object")
 
@@ -47,15 +48,19 @@ def _extract_file_bytes(target: str) -> bytes:
 
 
 def _parse_tree_object_bytes(object_bytes: bytes) -> list[str]:
+    split_bytes = object_bytes.split(b"\0")
+    header_bytes = split_bytes[0]
+    content_bytes = split_bytes[1:]
+
+    object_type, size = header_bytes.split(b" ")
 
     entries = []
-    for idx in range(len(object_bytes) - 1):
+    for idx in range(len(content_bytes) - 1):
         if idx == 0:
-            mode, name = object_bytes[idx].split(b" ")
-            continue
-        print(object_bytes[idx])
-        mode, name = object_bytes[idx][20:].split(b" ")
-        sha = object_bytes[idx + 1][:20]
+            mode, name = content_bytes[idx].split(b" ")
+        else:
+            mode, name = content_bytes[idx][20:].split(b" ")
+        sha = content_bytes[idx + 1][:20]
         entries.append((mode.decode(), name.decode(), sha.hex()))
 
     return entries
