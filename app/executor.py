@@ -4,6 +4,7 @@ from app.commands.cat_file import cat_file
 from app.commands.hash_object import hash_object
 from app.commands.init import init
 from app.commands.ls_tree import ls_tree
+from app.commands.write_tree import write_tree
 
 
 def execute_command(namespace: argparse.Namespace) -> None:
@@ -32,3 +33,5 @@ def execute_command(namespace: argparse.Namespace) -> None:
             name_only=namespace.ls_tree_name_only,
         )
         print(output)
+    elif command == "write-tree":
+        output = write_tree()

@@ -6,3 +6,33 @@ dependencies = [
     "flake8>=7.3.0",
     "flake8-pyproject>=1.2.4",
 ]
+
+[tool.ruff]
+
+line-length = 80
+indent-width = 4
+
+[tool.pytest.ini_options]
+markers = [
+    "db_test: requires PostgreSQL database access",
+]
+
+[tool.ruff.lint]
+# Disclaimer: ruff sometimes implements subsets of rules
+select = [
+    "E", # pycodestyle Error
+    "F", # Pyflakes
+    "Q", # flake8-quotes
+    "W", # pycodestyle Warning
+    "S", # flake8-bandit
+    "I", # isort
+    "T10", # flake8-debugger
+    "N", # pep8-naming
+    "C90", # mccabe
+    "ERA", # flake8-eradicate
+    "T10", # flake8-debugger
+    "C4", # flake8-comprehensions
+    "B", # flake8-bugbear
+    "COM", # flake8-commas
+]
+ignore = ["B008"]
