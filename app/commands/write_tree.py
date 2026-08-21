@@ -25,7 +25,7 @@ def _get_staged_targets(directory: str) -> list[str]:
     h = sha1()
     h.update(output.encode())
     new_tree_object_hash = h.hexdigest()
-    new_tree_object_dir = f"git/objects/{new_tree_object_hash[:2]}"
+    new_tree_object_dir = f".git/objects/{new_tree_object_hash[:2]}"
     new_tree_object_path = f"{new_tree_object_dir}/{new_tree_object_hash[2:]}"
     os.makedirs(new_tree_object_dir, exist_ok=True)
     with open(new_tree_object_path, "w") as f:
