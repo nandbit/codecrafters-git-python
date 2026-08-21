@@ -27,9 +27,15 @@ def _get_staged_targets(directory: str) -> list[str]:
     new_tree_object_hash = h.hexdigest()
     new_tree_object_dir = f".git/objects/{new_tree_object_hash[:2]}"
     new_tree_object_path = f"{new_tree_object_dir}/{new_tree_object_hash[2:]}"
+
+    print(f"creating directory {new_tree_object_dir}")
     os.makedirs(new_tree_object_dir, exist_ok=True)
+
+    print(f"writing to file {new_tree_object_path}")
     with open(new_tree_object_path, "w") as f:
         f.write(output)
+
+    print(output)
 
     return hash_object(
         target=new_tree_object_path,
