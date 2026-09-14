@@ -29,7 +29,7 @@ def hash_object(
     filepath = blob_filepath(hash)
 
     # Create the subdirectory in objects directory
-    os.mkdir(file_dir)
+    os.makedirs(file_dir, exist_ok=True)
 
     # Compress contents and write
     compressed_content = zlib.compress(header + content)

@@ -3,17 +3,17 @@ import zlib
 from hashlib import sha1
 from pathlib import Path
 
-from app.commands.hash_object import hash_object
+from app.commands.hash_object import _construct_header
 from app.utils import get_file_mode
 
 
-def write_tree() -> None:
-    tree_object_hash = _get_staged_targets(directory="./")
-    print(tree_object_hash)
+def write_tree(directory: str = "./") -> None:
+    tree_object_bytes_hash = _get_staged_targets(directory)
+    print(tree_object_bytes_hash.hex())
 
 
 def _get_staged_targets(directory: str) -> list[str]:
-    entries = dict()
+    entries = {}
     for dirpath, dirnames, filenames in os.walk(directory):
         for f in filenames:
             filepath = Path(os.path.join(dirpath, f))
@@ -27,45 +27,53 @@ def _get_staged_targets(directory: str) -> list[str]:
             entries[d] = {"hash": hash, "mode": "40000"}
         break
 
-    # for k, v in entries.items():
-    #     print(f"{k}: hash: {v['hash'][:5]} mode: {v['mode']}")
-
     entries_sorted = {k: v for k, v in sorted(entries.items())}
-
     entries_list = [
-        f"{v['mode']} {k}\0{v['hash'][:20]}" for k, v in entries_sorted.items()
+        bytes(v["mode"], "utf-8")
+        + b" "
+        + bytes(k, "utf-8")
+        + b"\x00"
+        + v["hash"]
+        for k, v in entries_sorted.items()
     ]
-    entries_string = "".join(entries_list)
-    header = f"tree {len(entries_string)}\0"
-    output = header + entries_string
-    output_compressed = zlib.compress(output.encode())
+
+    entries_bytes = b"".join(entries_list)
+    header = bytes(f"tree {len(entries_bytes)}\x00", "utf-8")
+    output = header + entries_bytes
+    output_compressed = zlib.compress(output)
 
     h = sha1()
     h.update(output)
-    new_tree_object_hash = h.hexdigest()
-    new_tree_object_dir = f".git/objects/{new_tree_object_hash[:2]}"
-    new_tree_object_path = f"{new_tree_object_dir}/{new_tree_object_hash[2:]}"
+    new_tree_object_hex_hash = h.hexdigest()[:40]
+    new_tree_object_bytes_hash = h.digest()[:20]
+    new_tree_object_dir = f".git/objects/{new_tree_object_hex_hash[:2]}"
+    new_tree_object_path = (
+        f"{new_tree_object_dir}/{new_tree_object_hex_hash[2:]}"
+    )
 
     os.makedirs(new_tree_object_dir, exist_ok=True)
     with open(new_tree_object_path, "wb") as f:
         f.write(output_compressed)
 
-    return new_tree_object_hash
-    # return hash_object(
-    #     target=new_tree_object_path,
-    #     write=False,
-    #     stdin=False,
-    #     content_type="tree",
-    # )
+    return new_tree_object_bytes_hash
 
 
 def _process_file(filepath: Path) -> tuple[str, str]:
     mode = get_file_mode(filepath)
-    hash = hash_object(
-        target=filepath,
-        write=False,
-        stdin=False,
-        content_type="blob",
-    )
+    hash = None
+    h = sha1()
+    with open(filepath, "rb") as f:
+        content = f.read()
+        h.update(_construct_header(content, "blob"))
+        h.update(content)
+        hash = h.digest()[:20]
+
+    return mode, hash
+    # hash = hash_object(
+    #     target=filepath,
+    #     write=True,
+    #     stdin=False,
+    #     content_type="blob",
+    # )
 
     return mode, hash
