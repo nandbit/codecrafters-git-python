@@ -1,6 +1,8 @@
 import argparse
 
 from app.commands.cat_file import cat_file
+from app.commands.commit_tree import commit_tree
+from app.commands.config import config
 from app.commands.hash_object import hash_object
 from app.commands.init import init
 from app.commands.ls_tree import ls_tree
@@ -35,3 +37,10 @@ def execute_command(namespace: argparse.Namespace) -> None:
         print(output)
     elif command == "write-tree":
         output = write_tree()
+    elif command == "commit-tree":
+        output = commit_tree()
+    elif command == "config":
+        output = config(
+            username=namespace.name,
+            email=namespace.email,
+        )

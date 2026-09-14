@@ -6,6 +6,8 @@ def main():
     parser = setup_parser()
     args = parser.parse_args()
 
+    print(args)
+
     execute_command(args)
 
 

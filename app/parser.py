@@ -13,6 +13,8 @@ def setup_parser() -> argparse.ArgumentParser:
     _setup_hash_object_parser(subparsers)
     _setup_ls_tree_parser(subparsers)
     _setup_write_tree_parser(subparsers)
+    _setup_commit_tree_parser(subparsers)
+    _setup_config_parser(subparsers)
 
     return parser
 
@@ -85,7 +87,8 @@ def _setup_ls_tree_parser(
     ls_tree_parser.add_argument(
         "--name-only",
         dest="ls_tree_name_only",
-        help='List only filenames (instead of the "long" output), one per line.',
+        help='List only filenames (instead of the "long" output),'
+        " one per line.",
         action="store_true",
     )
 
@@ -93,4 +96,28 @@ def _setup_ls_tree_parser(
 def _setup_write_tree_parser(
     subparsers: argparse.ArgumentParser,
 ) -> None:
-    write_tree_parser = subparsers.add_parser("write-tree")
+    _ = subparsers.add_parser("write-tree")
+
+
+def _setup_commit_tree_parser(subparsers: argparse.ArgumentParser) -> None:
+    _ = subparsers.add_parser("commit-tree")
+
+
+def _setup_config_parser(subparsers: argparse.ArgumentParser) -> None:
+    config_parser = subparsers.add_parser("config")
+    config_parser.add_argument(
+        "--local",
+        dest="config_local",
+        help="Store the config locally.",
+        action="store_true",
+    )
+    config_parser.add_argument(
+        "--name",
+        dest="name",
+        action="store",
+    )
+    config_parser.add_argument(
+        "--email",
+        dest="email",
+        action="store",
+    )
