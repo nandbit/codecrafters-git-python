@@ -69,11 +69,3 @@ def _process_file(filepath: Path) -> tuple[str, str]:
         hash = h.digest()[:20]
 
     return mode, hash
-    # hash = hash_object(
-    #     target=filepath,
-    #     write=True,
-    #     stdin=False,
-    #     content_type="blob",
-    # )
-
-    return mode, hash
