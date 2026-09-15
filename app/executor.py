@@ -38,7 +38,12 @@ def execute_command(namespace: argparse.Namespace) -> None:
     elif command == "write-tree":
         output = write_tree()
     elif command == "commit-tree":
-        output = commit_tree()
+        output = commit_tree(
+            hash=namespace.commit_tree_sha,
+            parent_commit_hash=namespace.parent_commit_sha,
+            message=namespace.commit_message,
+        )
+        print(output)
     elif command == "config":
         output = config(
             username=namespace.name,

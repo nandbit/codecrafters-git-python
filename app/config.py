@@ -1,0 +1,2 @@
+GIT_ROOT_DIRECTORY = ".git"
+GIT_OBJECTS_DIRECTORY = ".git/objects"

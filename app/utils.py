@@ -1,10 +1,12 @@
 import os
 
+from app.config import GIT_OBJECTS_DIRECTORY
+
 
 def blob_filepath(name: str) -> str:
     subdir = name[:2]
     filename = name[2:]
-    return os.path.join(f".git/objects/{subdir}/{filename}")
+    return os.path.join(f"{GIT_OBJECTS_DIRECTORY}/{subdir}/{filename}")
 
 
 def get_file_mode(filepath: str) -> str:

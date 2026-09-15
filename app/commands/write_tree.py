@@ -4,6 +4,7 @@ from hashlib import sha1
 from pathlib import Path
 
 from app.commands.hash_object import _construct_header
+from app.config import GIT_OBJECTS_DIRECTORY, GIT_ROOT_DIRECTORY
 from app.utils import get_file_mode
 
 
@@ -20,7 +21,7 @@ def _get_staged_targets(directory: str) -> list[str]:
             mode, hash = _process_file(filepath)
             entries[f] = {"hash": hash, "mode": mode}
         for d in dirnames:
-            if d == ".git":
+            if d == GIT_ROOT_DIRECTORY:
                 continue
             dirpath = Path(os.path.join(directory, d))
             hash = _get_staged_targets(dirpath)
@@ -46,7 +47,9 @@ def _get_staged_targets(directory: str) -> list[str]:
     h.update(output)
     new_tree_object_hex_hash = h.hexdigest()[:40]
     new_tree_object_bytes_hash = h.digest()[:20]
-    new_tree_object_dir = f".git/objects/{new_tree_object_hex_hash[:2]}"
+    new_tree_object_dir = (
+        f"{GIT_OBJECTS_DIRECTORY}/{new_tree_object_hex_hash[:2]}"
+    )
     new_tree_object_path = (
         f"{new_tree_object_dir}/{new_tree_object_hex_hash[2:]}"
     )

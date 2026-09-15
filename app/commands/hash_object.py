@@ -3,6 +3,7 @@ import os
 import sys
 import zlib
 
+from app.config import GIT_OBJECTS_DIRECTORY
 from app.utils import blob_filepath
 
 
@@ -15,7 +16,7 @@ def hash_object(
     _validate_hash_object_args(target, write, stdin)
 
     content = _extract_file_bytes(target)
-    header = _construct_header(content, "blob")
+    header = _construct_header(content, content_type)
     hash = _create_hash(
         content,
         header,
@@ -25,7 +26,7 @@ def hash_object(
         return hash
 
     # Create file to write to
-    file_dir = os.path.join(".git/objects/", hash[:2])
+    file_dir = os.path.join(GIT_OBJECTS_DIRECTORY, hash[:2])
     filepath = blob_filepath(hash)
 
     # Create the subdirectory in objects directory

@@ -100,7 +100,27 @@ def _setup_write_tree_parser(
 
 
 def _setup_commit_tree_parser(subparsers: argparse.ArgumentParser) -> None:
-    _ = subparsers.add_parser("commit-tree")
+    commit_tree_parser = subparsers.add_parser("commit-tree")
+    commit_tree_parser.add_argument(
+        dest="commit_tree_sha",
+        help="SHA-1 of the tree to commit.",
+        type=str,
+        action="store",
+    )
+    commit_tree_parser.add_argument(
+        "-m",
+        dest="commit_message",
+        help="Commit message.",
+        nargs="?",
+        action="store",
+    )
+    commit_tree_parser.add_argument(
+        "-p",
+        dest="parent_commit_sha",
+        help="SHA-1 of the parent commit",
+        nargs="?",
+        action="store",
+    )
 
 
 def _setup_config_parser(subparsers: argparse.ArgumentParser) -> None:
