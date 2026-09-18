@@ -17,6 +17,11 @@ markers = [
     "db_test: requires PostgreSQL database access",
 ]
 
+[dependency-groups]
+dev = [
+    "basedpyright>=1.40.1",
+]
+
 [tool.ruff.lint]
 # Disclaimer: ruff sometimes implements subsets of rules
 select = [

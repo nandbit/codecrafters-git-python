@@ -71,7 +71,6 @@ def _parse_tree_object_bytes(object_bytes: bytes) -> list[str]:
 
 def _parse_commit_object_bytes(object_bytes: bytes) -> list[str]:
     split_bytes = object_bytes.split(b"\0")
-    header_bytes = split_bytes[0]
     # Content in a commit object is NOT binary
     content = split_bytes[1].decode()
 
