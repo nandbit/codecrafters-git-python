@@ -1,7 +1,14 @@
 import hashlib
 import os
+import time
 import zlib
 
+from app.commands.config import (
+    ConfigError,
+    ConfigFileMissingError,
+    UserInfo,
+    get_user_info,
+)
 from app.commands.hash_object import (
     _construct_header,
     blob_filepath,
@@ -10,11 +17,22 @@ from app.config import GIT_OBJECTS_DIRECTORY
 
 
 def commit_tree(hash: str, parent_commit_hash: str, message: str) -> None:
+    try:
+        user_info = get_user_info()
+    except ConfigFileMissingError or ConfigError:
+        user_info = UserInfo(name="John Doe", email="john@example.com")
+    timestamp = int(time.time())
+    timezone_value = -int(time.timezone / 3600) * 100
+    timezone = (
+        str(timezone_value).zfill(4)
+        if timezone_value < 0
+        else "+" + str(timezone_value).zfill(4)
+    )
     content = (
         f"tree {hash}\n"
         + f"parent {parent_commit_hash}\n"
-        + "author John Doe <john@example.com> 1234567890 +0000\n"
-        + "committer John Doe <john@example.com> 1234567890 +0000\n"
+        + f"author {user_info.name} <{user_info.email}> {timestamp} {timezone}\n"
+        + f"committer {user_info.name} <{user_info.email}> {timestamp} {timezone}\n"
         + "\n"
         + message
         + "\n"

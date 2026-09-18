@@ -28,7 +28,7 @@ def _get_staged_targets(directory: str) -> list[str]:
             entries[d] = {"hash": hash, "mode": "40000"}
         break
 
-    entries_sorted = {k: v for k, v in sorted(entries.items())}
+    entries_sorted = dict(sorted(entries.items()))
     entries_list = [
         bytes(v["mode"], "utf-8")
         + b" "

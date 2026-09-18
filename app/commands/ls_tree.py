@@ -59,7 +59,10 @@ def _parse_tree_object_bytes(object_bytes: bytes) -> list[str]:
         if idx == 0:
             mode, name = content_bytes[idx].split(b" ")
         else:
-            mode, name = content_bytes[idx][20:].split(b" ")
+            metadata = content_bytes[idx][20:].split(b" ")
+            if len(metadata) == 1 and metadata[0] == b"":
+                continue
+            mode, name = metadata
         sha = content_bytes[idx + 1][:20]
         entries.append((mode.decode(), name.decode(), sha.hex()))
 
@@ -101,5 +104,5 @@ def _parse_commit_object_bytes(object_bytes: bytes) -> list[str]:
             f"{commiter} {commiter_name} {commiter_email} {commiter_timestamp} {commiter_timezone}",
             "",
             f"{commit_message}",
-        ]
+        ],
     )
